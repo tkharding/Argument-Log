@@ -17,7 +17,28 @@ function getDaysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function getFirstDay(y,m){ return new Date(y,m,1).getDay(); }
 function newId(){ return crypto.randomUUID ? crypto.randomUUID() : Date.now()+Math.random(); }
 
-async function apiFetch(path, method="GET", body=null, token=null){
+const EMAILJS_SERVICE  = "service_qmuxb08";
+const EMAILJS_TEMPLATE = "template_qbkkh47";
+const EMAILJS_KEY      = "k-ZfJByUzOM4ucAAD";
+
+async function sendSignupEmail(name, email){
+  try {
+    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id:  EMAILJS_SERVICE,
+        template_id: EMAILJS_TEMPLATE,
+        user_id:     EMAILJS_KEY,
+        template_params: {
+          user_name:   name,
+          user_email:  email,
+          signup_date: new Date().toLocaleString(),
+        },
+      }),
+    });
+  } catch(e){ console.log("Email notification failed:", e); }
+}
   const headers = { "Content-Type": "application/json" };
   if(token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API}${path}`, {
@@ -429,6 +450,7 @@ function LoginScreen({ onLogin }){
       if(res.error){ setError(res.error); setLoading(false); return; }
       localStorage.setItem("conflict_log_token", res.token);
       localStorage.setItem("conflict_log_user", JSON.stringify(res.user));
+      if(mode==="signup") sendSignupEmail(res.user.name, res.user.email);
       onLogin(res.user, res.token, mode==="signup");
     } catch(e){ setError("Connection error. Please try again."); }
     setLoading(false);
