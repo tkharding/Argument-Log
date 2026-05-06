@@ -39,6 +39,8 @@ async function sendSignupEmail(name, email){
     });
   } catch(e){ console.log("Email notification failed:", e); }
 }
+
+async function apiFetch(path, method="GET", body=null, token=null){
   const headers = { "Content-Type": "application/json" };
   if(token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API}${path}`, {
