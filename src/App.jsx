@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-
 const API = "https://argument-log-api.tkharding1.workers.dev";
-
+const EMAILJS_SERVICE  = "service_qmuxb08";
+const EMAILJS_TEMPLATE = "template_qbkkh47";
+const EMAILJS_KEY      = "k-ZfJByUzOM4ucAAD";
 const DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 const MONTHS = ["January","February","March","April","May","June",
   "July","August","September","October","November","December"];
