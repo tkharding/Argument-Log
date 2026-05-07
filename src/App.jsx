@@ -17,11 +17,6 @@ function toKey(y,m,d){ return `${y}-${String(m+1).padStart(2,"0")}-${String(d).p
 function getDaysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function getFirstDay(y,m){ return new Date(y,m,1).getDay(); }
 function newId(){ return crypto.randomUUID ? crypto.randomUUID() : Date.now()+Math.random(); }
-
-const EMAILJS_SERVICE  = "service_qmuxb08";
-const EMAILJS_TEMPLATE = "template_qbkkh47";
-const EMAILJS_KEY      = "k-ZfJByUzOM4ucAAD";
-
 async function sendSignupEmail(name, email){
   try {
     await fetch("https://api.emailjs.com/api/v1.0/email/send", {
