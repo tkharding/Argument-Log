@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
+
 const API = "https://argument-log-api.tkharding1.workers.dev";
-const EMAILJS_SERVICE  = "service_qmuxb08";
-const EMAILJS_TEMPLATE = "template_qbkkh47";
-const EMAILJS_KEY      = "k-ZfJByUzOM4ucAAD";
+
 const DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 const MONTHS = ["January","February","March","April","May","June",
   "July","August","September","October","November","December"];
@@ -17,6 +16,12 @@ function toKey(y,m,d){ return `${y}-${String(m+1).padStart(2,"0")}-${String(d).p
 function getDaysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function getFirstDay(y,m){ return new Date(y,m,1).getDay(); }
 function newId(){ return crypto.randomUUID ? crypto.randomUUID() : Date.now()+Math.random(); }
+
+const EMAILJS_SERVICE  = "service_qmuxb08";
+const EMAILJS_TEMPLATE = "template_qbkkh47";
+const EMAILJS_RESET    = "template_ujsw1ie";
+const EMAILJS_KEY      = "k-ZfJByUzOM4ucAAD";
+
 async function sendSignupEmail(name, email){
   try {
     await fetch("https://api.emailjs.com/api/v1.0/email/send", {
@@ -34,6 +39,25 @@ async function sendSignupEmail(name, email){
       }),
     });
   } catch(e){ console.log("Email notification failed:", e); }
+}
+
+async function sendResetEmail(name, email, code){
+  try {
+    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id:  EMAILJS_SERVICE,
+        template_id: EMAILJS_RESET,
+        user_id:     EMAILJS_KEY,
+        template_params: {
+          user_name:  name,
+          user_email: email,
+          reset_code: code,
+        },
+      }),
+    });
+  } catch(e){ console.log("Reset email failed:", e); }
 }
 
 async function apiFetch(path, method="GET", body=null, token=null){
@@ -428,7 +452,124 @@ function SummaryStats({ data, year, month }){
   );
 }
 
+function ForgotPasswordScreen({ onBack }){
+  const [step,        setStep]        = useState("request"); // "request" | "confirm"
+  const [email,       setEmail]       = useState("");
+  const [code,        setCode]        = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [error,       setError]       = useState("");
+  const [loading,     setLoading]     = useState(false);
+  const [success,     setSuccess]     = useState(false);
+
+  async function handleRequest(){
+    if(!email){ setError("Please enter your email."); return; }
+    setLoading(true); setError("");
+    const res = await apiFetch("/api/reset-request", "POST", { email });
+    if(res.success){
+      await sendResetEmail(res.name || "there", email, res.code);
+      setStep("confirm");
+    } else {
+      setError(res.error || "Something went wrong.");
+    }
+    setLoading(false);
+  }
+
+  async function handleConfirm(){
+    if(!code || !newPassword){ setError("Please fill in all fields."); return; }
+    if(newPassword.length < 6){ setError("Password must be at least 6 characters."); return; }
+    setLoading(true); setError("");
+    const res = await apiFetch("/api/reset-confirm", "POST", { email, code, newPassword });
+    if(res.success){ setSuccess(true); }
+    else { setError(res.error || "Invalid or expired code."); }
+    setLoading(false);
+  }
+
+  const inputStyle = {
+    width:"100%", boxSizing:"border-box",
+    background:"#e8f0ec", border:"1.5px solid #b8d4c4", borderRadius:10,
+    color:"#1a3040", fontSize:16, padding:"12px 14px",
+    outline:"none", fontFamily:"inherit", marginTop:6,
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f0f4f8", display:"flex",
+      flexDirection:"column", alignItems:"center", justifyContent:"center",
+      padding:"28px 16px", fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,serif" }}>
+
+      <div style={{ background:"#ffffff", border:"1px solid #b8d4c4", borderRadius:18,
+        width:"100%", maxWidth:380, padding:"28px 24px", boxShadow:"0 8px 32px rgba(26,96,58,0.1)" }}>
+
+        <div style={{ textAlign:"center", marginBottom:24 }}>
+          <div style={{ fontSize:22, fontWeight:700, color:"#1a3040" }}>Reset Password</div>
+          <div style={{ fontSize:14, color:"#3a5a6a", marginTop:6 }}>
+            {step==="request"
+              ? "Enter your email and we'll send you a reset code."
+              : "Enter the 6-digit code we sent to your email."}
+          </div>
+        </div>
+
+        {success ? (
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:40, marginBottom:12 }}>✅</div>
+            <div style={{ fontSize:16, color:"#1a6b3a", fontWeight:600, marginBottom:16 }}>
+              Password updated successfully!
+            </div>
+            <button onClick={onBack} style={{ ...solidBtn("#1a6b3a"), width:"100%", padding:"13px" }}>
+              Back to Sign In
+            </button>
+          </div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            {step==="request" ? (
+              <div>
+                <label style={{ fontSize:12, color:"#2a4a5a", letterSpacing:"0.1em", textTransform:"uppercase" }}>Email</label>
+                <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com"
+                  type="email" style={inputStyle}
+                  onKeyDown={e=>{ if(e.key==="Enter") handleRequest(); }} />
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label style={{ fontSize:12, color:"#2a4a5a", letterSpacing:"0.1em", textTransform:"uppercase" }}>Reset Code</label>
+                  <input value={code} onChange={e=>setCode(e.target.value)} placeholder="6-digit code"
+                    style={inputStyle} />
+                </div>
+                <div>
+                  <label style={{ fontSize:12, color:"#2a4a5a", letterSpacing:"0.1em", textTransform:"uppercase" }}>New Password</label>
+                  <input value={newPassword} onChange={e=>setNewPassword(e.target.value)}
+                    placeholder="••••••••" type="password" style={inputStyle}
+                    onKeyDown={e=>{ if(e.key==="Enter") handleConfirm(); }} />
+                </div>
+              </>
+            )}
+
+            {error && (
+              <div style={{ fontSize:13, color:"#b04a4a", background:"#b04a4a18",
+                border:"1px solid #b04a4a44", borderRadius:8, padding:"8px 12px" }}>{error}</div>
+            )}
+
+            <button onClick={step==="request" ? handleRequest : handleConfirm}
+              disabled={loading} style={{
+                ...solidBtn("#1a6b3a"), width:"100%", padding:"13px", fontSize:16,
+                opacity:loading?0.7:1,
+              }}>
+              {loading ? "Please wait..." : step==="request" ? "Send Reset Code" : "Reset Password"}
+            </button>
+
+            <button onClick={onBack} style={{ ...ghostBtn, width:"100%", textAlign:"center" }}>
+              Back to Sign In
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function LoginScreen({ onLogin }){
+  const [showForgot, setShowForgot] = useState(false);
+  if(showForgot) return <ForgotPasswordScreen onBack={() => setShowForgot(false)} />;
+
   const [mode,    setMode]    = useState("login");
   const [email,   setEmail]   = useState("");
   const [password,setPassword]= useState("");
@@ -537,6 +678,15 @@ function LoginScreen({ onLogin }){
             {mode==="login"?"Create an account":"Sign in"}
           </button>
         </div>
+        {mode==="login" && (
+          <div style={{ textAlign:"center", marginTop:10 }}>
+            <button onClick={() => setShowForgot(true)}
+              style={{ background:"none", border:"none", color:"#3a5a6a", fontSize:13,
+                cursor:"pointer", fontFamily:"inherit", textDecoration:"underline" }}>
+              Forgot your password?
+            </button>
+          </div>
+        )}
       </div>
       <div style={{ marginTop:20, fontSize:12, color:"#7a9aaa", textAlign:"center", maxWidth:300 }}>
         Your data is securely stored in the cloud and syncs across all your devices.
