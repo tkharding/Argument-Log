@@ -566,10 +566,7 @@ function ForgotPasswordScreen({ onBack }){
   );
 }
 
-function LoginScreen({ onLogin }){
-  const [showForgot, setShowForgot] = useState(false);
-  if(showForgot) return <ForgotPasswordScreen onBack={() => setShowForgot(false)} />;
-
+function LoginScreen({ onLogin, onForgotPassword }){
   const [mode,    setMode]    = useState("login");
   const [email,   setEmail]   = useState("");
   const [password,setPassword]= useState("");
@@ -680,7 +677,7 @@ function LoginScreen({ onLogin }){
         </div>
         {mode==="login" && (
           <div style={{ textAlign:"center", marginTop:10 }}>
-            <button onClick={() => setShowForgot(true)}
+            <button onClick={onForgotPassword}
               style={{ background:"none", border:"none", color:"#3a5a6a", fontSize:13,
                 cursor:"pointer", fontFamily:"inherit", textDecoration:"underline" }}>
               Forgot your password?
@@ -919,7 +916,8 @@ export default function App(){
     setExportText(lines.join("\n"));
   }
 
-  if(!user) return <LoginScreen onLogin={handleLogin} />;
+  if(!user && screen==="forgot") return <ForgotPasswordScreen onBack={() => setScreen("app")} />;
+  if(!user) return <LoginScreen onLogin={handleLogin} onForgotPassword={() => setScreen("forgot")} />;
 
   if(loading) return (
     <div style={{ minHeight:"100vh", background:"#f0f4f8", display:"flex",
