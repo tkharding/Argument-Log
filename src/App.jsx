@@ -831,6 +831,114 @@ function SettingsPage({ user, folder, onEditFolder, onDeleteData, onLogout, onCl
   );
 }
 
+function PaywallScreen({ user, token, onLogout, onPromoSuccess }){
+  const [promoCode,  setPromoCode]  = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [promoMsg,   setPromoMsg]   = useState("");
+  const [loading,    setLoading]    = useState(false);
+  const [subLoading, setSubLoading] = useState(false);
+
+  async function handlePromo(){
+    if(!promoCode){ setPromoError("Please enter a promo code."); return; }
+    setLoading(true); setPromoError(""); setPromoMsg("");
+    const res = await apiFetch("/api/promo", "POST", { code: promoCode }, token);
+    if(res.success){
+      setPromoMsg("✓ " + res.message);
+      setTimeout(() => onPromoSuccess(), 1500);
+    } else {
+      setPromoError(res.error || "Invalid promo code.");
+    }
+    setLoading(false);
+  }
+
+  async function handleSubscribe(){
+    setSubLoading(true);
+    const res = await apiFetch("/api/create-checkout", "POST", {}, token);
+    if(res.url){
+      window.location.href = res.url;
+    } else {
+      alert("Something went wrong. Please try again.");
+      setSubLoading(false);
+    }
+  }
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f0f4f8", display:"flex",
+      flexDirection:"column", alignItems:"center", justifyContent:"center",
+      padding:"28px 16px", fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,serif" }}>
+
+      <div style={{ background:"#ffffff", border:"1px solid #b8d4c4", borderRadius:18,
+        width:"100%", maxWidth:400, padding:"36px 28px",
+        boxShadow:"0 8px 32px rgba(26,96,58,0.1)", position:"relative", overflow:"hidden" }}>
+
+        {/* Top accent bar */}
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:4,
+          background:"linear-gradient(90deg, #1a237e, #1a6b3a)" }} />
+
+        <div style={{ textAlign:"center", marginBottom:28 }}>
+          <div style={{ fontSize:36, marginBottom:8 }}>🔒</div>
+          <div style={{ fontSize:24, fontWeight:700, color:"#1a3040",
+            fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,serif" }}>
+            Your Free Trial Has Ended
+          </div>
+          <div style={{ fontSize:15, color:"#3a5a6a", marginTop:8, lineHeight:1.6 }}>
+            Thanks for trying Argument Log! Continue your journey for just <strong>99¢/month</strong>.
+          </div>
+        </div>
+
+        {/* Features reminder */}
+        <div style={{ background:"#e8f0ec", borderRadius:12, padding:"16px 20px", marginBottom:24 }}>
+          {["Unlimited argument logging","Cloud sync across all devices",
+            "Summary stats & trend charts","Password protected & private"].map((f,i) => (
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:10,
+              padding:"6px 0", borderBottom: i<3?"1px solid #b8d4c4":"none" }}>
+              <span style={{ color:"#1a6b3a", fontWeight:700, fontSize:16 }}>✓</span>
+              <span style={{ fontSize:14, color:"#1a3040" }}>{f}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Subscribe button */}
+        <button onClick={handleSubscribe} disabled={subLoading} style={{
+          ...solidBtn("#1a6b3a"), width:"100%", padding:"14px", fontSize:17,
+          marginBottom:16, opacity:subLoading?0.7:1,
+        }}>
+          {subLoading ? "Redirecting to payment..." : "Subscribe for 99¢/month →"}
+        </button>
+
+        <div style={{ textAlign:"center", fontSize:12, color:"#3a5a6a", marginBottom:24 }}>
+          Secure payment via Stripe. Cancel anytime.
+        </div>
+
+        {/* Promo code */}
+        <div style={{ borderTop:"1px solid #b8d4c4", paddingTop:20 }}>
+          <div style={{ fontSize:12, color:"#2a4a5a", letterSpacing:"0.1em",
+            textTransform:"uppercase", marginBottom:8 }}>Have a Promo Code?</div>
+          <div style={{ display:"flex", gap:8 }}>
+            <input value={promoCode} onChange={e=>setPromoCode(e.target.value.toUpperCase())}
+              placeholder="Enter code"
+              style={{ flex:1, background:"#e8f0ec", border:"1.5px solid #b8d4c4",
+                borderRadius:8, color:"#1a3040", fontSize:15, padding:"10px 14px",
+                outline:"none", fontFamily:"inherit", letterSpacing:"0.1em" }}
+              onKeyDown={e=>{ if(e.key==="Enter") handlePromo(); }} />
+            <button onClick={handlePromo} disabled={loading} style={{
+              ...solidBtn("#1a237e"), padding:"10px 16px", opacity:loading?0.7:1,
+            }}>Apply</button>
+          </div>
+          {promoError && <div style={{ fontSize:13, color:"#c0392b", marginTop:6 }}>{promoError}</div>}
+          {promoMsg   && <div style={{ fontSize:13, color:"#1a6b3a", marginTop:6 }}>{promoMsg}</div>}
+        </div>
+
+        <button onClick={onLogout} style={{
+          background:"none", border:"none", color:"#3a5a6a", fontSize:13,
+          cursor:"pointer", width:"100%", textAlign:"center", marginTop:20,
+          fontFamily:"inherit", textDecoration:"underline",
+        }}>Sign out</button>
+      </div>
+    </div>
+  );
+}
+
 export default function App(){
   const today = new Date();
   const [year,     setYear]     = useState(today.getFullYear());
@@ -847,6 +955,7 @@ export default function App(){
   const [data,         setData]         = useState({});
   const [customTopics, setCustomTopics] = useState([]);
   const [exportText,   setExportText]   = useState(null);
+  const [subActive,    setSubActive]    = useState(true); // assume active until checked
 
   useEffect(() => {
     if(!user||!token) return;
@@ -855,13 +964,25 @@ export default function App(){
       apiFetch("/api/folder","GET",null,token),
       apiFetch("/api/entries","GET",null,token),
       apiFetch("/api/topics","GET",null,token),
-    ]).then(([fRes,eRes,tRes]) => {
+      apiFetch("/api/subscription","GET",null,token),
+    ]).then(([fRes,eRes,tRes,sRes]) => {
       if(fRes.folder)  setFolder(fRes.folder);
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
+      if(sRes)         setSubActive(sRes.isActive !== false);
       setLoading(false);
     }).catch(()=>setLoading(false));
   }, [user,token]);
+  }, [user,token]);
+
+  // Handle return from Stripe payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("payment") === "success") {
+      setSubActive(true);
+      window.history.replaceState({}, "", "/");
+    }
+  }, []);
 
   function handleLogin(u,t,isNewUser){
     setUser(u); setToken(t);
@@ -918,6 +1039,15 @@ export default function App(){
 
   if(!user && screen==="forgot") return <ForgotPasswordScreen onBack={() => setScreen("app")} />;
   if(!user) return <LoginScreen onLogin={handleLogin} onForgotPassword={() => setScreen("forgot")} />;
+
+  if(!subActive && !loading) return (
+    <PaywallScreen
+      user={user}
+      token={token}
+      onLogout={handleLogout}
+      onPromoSuccess={() => setSubActive(true)}
+    />
+  );
 
   if(loading) return (
     <div style={{ minHeight:"100vh", background:"#f0f4f8", display:"flex",
