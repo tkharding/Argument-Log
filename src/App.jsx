@@ -969,7 +969,7 @@ export default function App(){
       if(fRes.folder)  setFolder(fRes.folder);
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
-      if(sRes)         setSubActive(sRes.isActive !== false);
+      if(sRes)         setSubActive(sRes.isActive === true);
       setLoading(false);
     }).catch(()=>setLoading(false));
   }, [user,token]);
