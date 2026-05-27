@@ -969,9 +969,13 @@ export default function App(){
       if(fRes.folder)  setFolder(fRes.folder);
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
-      if(user.email === "BigBobTest@gmail.com") {
+     if(user.email === "BigBobTest@gmail.com") {
   setSubActive(false);
-} else if(sRes) {
+  setLoading(false);
+  return;
+}
+
+if(sRes) {
   setSubActive(sRes.isActive === true);
 }
       setLoading(false);
