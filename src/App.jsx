@@ -977,7 +977,6 @@ export default function App(){
       setLoading(false);
     }).catch(()=>setLoading(false));
   }, [user,token]);
-  }, [user,token]);
 
   // Handle return from Stripe payment
   useEffect(() => {
