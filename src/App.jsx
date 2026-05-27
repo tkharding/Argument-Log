@@ -976,7 +976,15 @@ export default function App(){
 }
 
 if(sRes) {
+  const TEST_MODE = true;
+const TEST_EMAIL = "yourtest@email.com";
+
+if (TEST_MODE && user.email === TEST_EMAIL) {
+  console.log("TEST MODE: forcing paywall");
+  setSubActive(false);
+} else if (sRes) {
   setSubActive(sRes.isActive === true);
+}
 }
       setLoading(false);
     }).catch(()=>setLoading(false));
