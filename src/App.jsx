@@ -955,7 +955,7 @@ export default function App(){
   const [data,         setData]         = useState({});
   const [customTopics, setCustomTopics] = useState([]);
   const [exportText,   setExportText]   = useState(null);
-  const [subActive,    setSubActive]    = useState(true); // assume active until checked
+  const [subActive,    setSubActive]    = useState(false); // assume active until checked
 
   useEffect(() => {
     if(!user||!token) return;
@@ -969,22 +969,9 @@ export default function App(){
       if(fRes.folder)  setFolder(fRes.folder);
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
-     if(user.email === "BigBobTest@gmail.com") {
-  setSubActive(false);
-  setLoading(false);
-  return;
-}
 
-if(sRes) {
-  const TEST_MODE = true;
-const TEST_EMAIL = "bigbobtest@email.com";
-
-if (TEST_MODE && user.email === TEST_EMAIL) {
-  console.log("TEST MODE: forcing paywall");
-  setSubActive(false);
-} else if (sRes) {
+      if(sRes) {
   setSubActive(sRes.isActive === true);
-}
 }
       setLoading(false);
     }).catch(()=>setLoading(false));
