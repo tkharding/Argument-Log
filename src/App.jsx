@@ -969,10 +969,13 @@ export default function App(){
       if(fRes.folder)  setFolder(fRes.folder);
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
-
-      if(sRes) {
+      
+if(user.email === "BigBobTest2@gmail.com") {
+  setSubActive(false);
+} else if(sRes) {
   setSubActive(sRes.isActive === true);
 }
+      
       setLoading(false);
     }).catch(()=>setLoading(false));
   }, [user,token]);
