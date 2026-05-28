@@ -970,7 +970,7 @@ export default function App(){
       if(eRes.data)    setData(eRes.data);
       if(tRes.topics)  setCustomTopics(tRes.topics);
       
-if(user.email === "BigBobTest2@gmail.com") {
+if(user.email === "BigBobTest@gmail.com") {
   setSubActive(false);
 } else if(sRes) {
   setSubActive(sRes.isActive === true);
