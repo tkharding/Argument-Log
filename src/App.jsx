@@ -972,7 +972,11 @@ export default function App(){
 
       console.log("subscription response:", sRes);
       
+ if(user.email?.toLowerCase() === "bigbobtest@gmail.com") {
+  setSubActive(false);
+} else if(sRes) {
   setSubActive(sRes.isActive === true);
+}
       
       setLoading(false);
     }).catch(()=>setLoading(false));
