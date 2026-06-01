@@ -983,13 +983,17 @@ export default function App(){
   }, [user,token]);
 
   // Handle return from Stripe payment
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("payment") === "success") {
-      setSubActive(true);
-      window.history.replaceState({}, "", "/");
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if(params.get("payment") === "success") {
+    window.history.replaceState({}, "", "/");
+    if(token) {
+      apiFetch("/api/subscription", "GET", null, token).then(sRes => {
+        if(sRes && sRes.isActive === true) setSubActive(true);
+      });
     }
-  }, []);
+  }
+}, [token]);
 
   function handleLogin(u,t,isNewUser){
     setUser(u); setToken(t);
