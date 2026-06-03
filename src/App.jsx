@@ -813,12 +813,30 @@ function SettingsPage({ user, folder, onEditFolder, onDeleteData, onLogout, onCl
             Edit Names / Folder
           </button>
         </div>
-        <div style={{ background:"#ffffff", border:"1px solid #f5c0c0", borderRadius:16, padding:"20px", marginBottom:16 }}>
-          <SectionLabel>Danger Zone</SectionLabel>
-          {!confirmDelete ? (
-            <button onClick={() => setConfirmDelete(true)} style={{ ...solidBtn("#c0392b"), marginTop:14, width:"100%", padding:"11px" }}>
-              Delete All Data
-            </button>
+     <div style={{ background:"#ffffff", border:"1px solid #b8d4c4", borderRadius:16, padding:"20px", marginBottom:16 }}>
+  <SectionLabel>Subscription</SectionLabel>
+  <div style={{ fontSize:14, color:"#3a5a6a", marginTop:8, lineHeight:1.6 }}>
+    To cancel your subscription, tap the button below. You will keep access until the end of your current billing period.
+  </div>
+  <button onClick={async () => {
+    if(!window.confirm("Are you sure you want to cancel your subscription? You will keep access until the end of your billing period.")) return;
+    const res = await apiFetch("/api/cancel-subscription", "POST", {}, token);
+    if(res.success){
+      alert("Your subscription has been cancelled. You will keep access until the end of your billing period.");
+    } else {
+      alert("Something went wrong. Please contact support.");
+    }
+  }} style={{ ...solidBtn("#c0392b"), marginTop:14, width:"100%", padding:"11px" }}>
+    Cancel Subscription
+  </button>
+</div>
+
+<div style={{ background:"#ffffff", border:"1px solid #f5c0c0", borderRadius:16, padding:"20px", marginBottom:16 }}>
+  <SectionLabel>Danger Zone</SectionLabel>
+  {!confirmDelete ? (
+    <button onClick={() => setConfirmDelete(true)} style={{ ...solidBtn("#c0392b"), marginTop:14, width:"100%", padding:"11px" }}>
+      Delete All Data
+    </button>
           ) : (
             <div style={{ marginTop:14 }}>
               <div style={{ fontSize:14, color:"#b04a4a", marginBottom:12, lineHeight:1.5 }}>
