@@ -343,9 +343,22 @@ function SummaryStats({ data, year, month }){
   const trendSeries = [0,1,2].map(i => trendKeys.map(k => trendSource[k][i]));
   const maxTrendVal = Math.max(...trendKeys.flatMap(k => trendSource[k]), 1);
 
-  if(total===0) return (
-    <div style={{ textAlign:"center", padding:"24px 0", color:"#3a5a6a", fontSize:15 }}>
-      No data for {scope==="month" ? MONTHS[month] : "any period"} yet.
+if(total===0) return (
+    <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+      <div style={{ display:"flex", background:"#e8f0ec", borderRadius:8, padding:3 }}>
+        {[["month",MONTHS[month]],["all","All Time"]].map(([s,lbl]) => (
+          <button key={s} onClick={() => setScope(s)} style={{
+            flex:1, padding:"7px 0", border:"none", borderRadius:6,
+            background: scope===s ? "#c8e6d4" : "transparent",
+            color: scope===s ? "#1a6b3a" : "#2a4a5a",
+            fontSize:13, fontWeight:700, letterSpacing:"0.08em",
+            textTransform:"uppercase", cursor:"pointer",
+          }}>{lbl}</button>
+        ))}
+      </div>
+      <div style={{ textAlign:"center", padding:"24px 0", color:"#3a5a6a", fontSize:15 }}>
+        No data for {scope==="month" ? MONTHS[month] : "any period"} yet.
+      </div>
     </div>
   );
 
