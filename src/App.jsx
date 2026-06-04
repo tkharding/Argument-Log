@@ -637,7 +637,8 @@ function LoginScreen({ onLogin, onForgotPassword }){
             background:"#1a237e18", border:"1.8px solid #1a237e99", bottom:-40, left:12 }} />
         </div>
         <div style={{ fontSize:30, fontWeight:700, color:"#1a3040", marginTop:18 }}>Argument Log</div>
-        <div style={{ fontSize:14, color:"#3a5a6a", marginTop:6 }}>Track, reflect, and grow together</div>
+    <div style={{ fontSize:14, color:"#3a5a6a", marginTop:6 }}>Track, reflect, and grow together</div>
+<div style={{ fontSize:13, color:"#1a6b3a", marginTop:8, fontWeight:700 }}>Try free for 30 days — then just 99¢/month</div>
       </div>
 
       <div style={{ background:"#ffffff", border:"1px solid #b8d4c4", borderRadius:18,
@@ -698,9 +699,15 @@ function LoginScreen({ onLogin, onForgotPassword }){
           </div>
         )}
       </div>
-      <div style={{ marginTop:20, fontSize:12, color:"#7a9aaa", textAlign:"center", maxWidth:300 }}>
-        Your data is securely stored in the cloud and syncs across all your devices.
-      </div>
+<div style={{ marginTop:20, fontSize:12, color:"#7a9aaa", textAlign:"center", maxWidth:300 }}>
+  Your data is securely stored in the cloud and syncs across all your devices.
+</div>
+<div style={{ marginTop:10, fontSize:12, color:"#7a9aaa", textAlign:"center", maxWidth:300 }}>
+  Need help? Email us at{" "}
+  <a href="mailto:argumentlog2026@gmail.com" style={{ color:"#1a6b3a", textDecoration:"none", fontWeight:700 }}>
+    argumentlog2026@gmail.com
+  </a>
+</div>
     </div>
   );
 }
@@ -852,11 +859,24 @@ function SettingsPage({ user, folder, onEditFolder, onDeleteData, onLogout, onCl
             </div>
           )}
         </div>
-        <button onClick={onLogout} style={{
-          background:"none", border:"1px solid #b8d4c4", borderRadius:12,
-          color:"#3a5a6a", fontSize:14, fontWeight:600, padding:"13px",
-          cursor:"pointer", width:"100%",
-        }}>Sign Out</button>
+<div style={{ background:"#ffffff", border:"1px solid #b8d4c4", borderRadius:16, padding:"20px", marginBottom:16 }}>
+  <SectionLabel>Support</SectionLabel>
+  <div style={{ fontSize:14, color:"#3a5a6a", marginTop:8, lineHeight:1.6 }}>
+    Having trouble? We are happy to help.
+  </div>
+  <a href="mailto:argumentlog2026@gmail.com" style={{
+    display:"block", marginTop:10, fontSize:14, color:"#1a6b3a",
+    fontWeight:700, textDecoration:"none",
+  }}>
+    argumentlog2026@gmail.com
+  </a>
+</div>
+
+<button onClick={onLogout} style={{
+  background:"none", border:"1px solid #b8d4c4", borderRadius:12,
+  color:"#3a5a6a", fontSize:14, fontWeight:600, padding:"13px",
+  cursor:"pointer", width:"100%",
+}}>Sign Out</button>
       </div>
     </div>
   );
