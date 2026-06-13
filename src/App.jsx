@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API = "https://betwixt-api.tkharding1.workers.dev";
+const API = "https://argument-log-api.tkharding1.workers.dev";
 
 const DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 const MONTHS = ["January","February","March","April","May","June",
