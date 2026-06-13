@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API = "https://argument-log-api.tkharding1.workers.dev";
+const API = "https://betwixt-api.tkharding1.workers.dev";
 
 const DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 const MONTHS = ["January","February","March","April","May","June",
@@ -630,14 +630,14 @@ function LoginScreen({ onLogin, onForgotPassword }){
               bottom:-30px; left:18px; }
           `}</style>
           <div className="logo-cloud">
-            <span style={{ fontSize:18, fontWeight:700, color:"#1a237e",
-              letterSpacing:"0.3em", textTransform:"uppercase" }}>Between Us</span>
+          <span style={{ fontSize:18, fontWeight:700, color:"#1a237e",
+  letterSpacing:"0.3em", textTransform:"uppercase" }}>Betwixt</span>
           </div>
           <div style={{ position:"absolute", width:8, height:8, borderRadius:"50%",
             background:"#1a237e18", border:"1.8px solid #1a237e99", bottom:-40, left:12 }} />
         </div>
-        <div style={{ fontSize:30, fontWeight:700, color:"#1a3040", marginTop:18 }}>Argument Log</div>
-    <div style={{ fontSize:14, color:"#3a5a6a", marginTop:6 }}>Track, reflect, and grow together</div>
+      <div style={{ fontSize:30, fontWeight:700, color:"#1a3040", marginTop:18 }}>Betwixt</div>
+ <div style={{ fontSize:14, color:"#3a5a6a", marginTop:6 }}>Understand each other better, together</div>
 <div style={{ fontSize:13, color:"#1a6b3a", marginTop:8, fontWeight:700 }}>Try free for 30 days — then just 99¢/month</div>
       </div>
 
@@ -1188,15 +1188,15 @@ useEffect(() => {
               <div style={{ background:"#1a237e18", border:"2px solid #1a237e99",
                 borderRadius:"50% 50% 50% 50%/40% 40% 60% 60%",
                 padding:"6px 18px", display:"inline-block", position:"relative" }}>
-                <span style={{ fontSize:11, fontWeight:700, color:"#1a237e",
-                  letterSpacing:"0.25em", textTransform:"uppercase" }}>Between Us</span>
+              <span style={{ fontSize:11, fontWeight:700, color:"#1a237e",
+  letterSpacing:"0.25em", textTransform:"uppercase" }}>Betwixt</span>
                 <div style={{ position:"absolute", width:10, height:10, borderRadius:"50%",
                   background:"#1a237e18", border:"1.5px solid #1a237e99", bottom:-9, left:14 }}/>
                 <div style={{ position:"absolute", width:6, height:6, borderRadius:"50%",
                   background:"#1a237e18", border:"1.5px solid #1a237e99", bottom:-16, left:8 }}/>
               </div>
             </div>
-            <div style={{ fontSize:22, fontWeight:700, color:"#1a3040", letterSpacing:"-0.02em", marginTop:6 }}>Argument Log</div>
+           <div style={{ fontSize:22, fontWeight:700, color:"#1a3040", letterSpacing:"-0.02em", marginTop:6 }}>Betwixt</div>
           </div>
           <button onClick={()=>setScreen("settings")} style={{ background:"none", border:"1px solid #b8d4c4",
             borderRadius:8, color:"#3a5a6a", fontSize:18, padding:"5px 10px", cursor:"pointer" }}>⚙️</button>
